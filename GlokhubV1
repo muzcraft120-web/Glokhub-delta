@@ -1,147 +1,46 @@
--- Glok Hub v1 - Mobile Only (Fly/Noclip Menülü)
--- Delta'da tek satır: loadstring(game:HttpGet("https://raw.githubusercontent.com/muzcraft120-web/Glokhub-delta/main/GlokV1.lua"))()
+--// Example Roblox Hub UI (Eğitim Amaçlı)
+--// Herhangi bir hile içermez.
 
-local plr = game.Players.LocalPlayer
-local char = plr.Character or plr.CharacterAdded:Wait()
-local hum = char:FindFirstChild("Humanoid")
-local root = char:WaitForChild("HumanoidRootPart")
-local rs = game:GetService("RunService")
-local ts = game:GetService("TweenService")
-local lighting = game:GetService("Lighting")
+-- GUI oluştur
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local HomeButton = Instance.new("TextButton")
+local InfoLabel = Instance.new("TextLabel")
 
-getgenv().flyspeed = 50
-getgenv().flying = false
-getgenv().noclip = false
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- GUI
-local sg = Instance.new("ScreenGui", plr.PlayerGui)
-sg.ResetOnSpawn = false
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+Frame.Position = UDim2.new(0.3, 0, 0.3, 0)
+Frame.Size = UDim2.new(0, 400, 0, 300)
+Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = true
 
-local main = Instance.new("Frame", sg)
-main.Size = UDim2.new(0,460,0,600)
-main.Position = UDim2.new(0.5,-230,0.5,-300)
-main.BackgroundColor3 = Color3.fromRGB(18,18,18)
-main.Active = true
-main.Draggable = true
-Instance.new("UICorner", main).CornerRadius = UDim.new(0,16)
+Title.Parent = Frame
+Title.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Text = "My Hub V1.0"
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.TextScaled = true
+Title.Font = Enum.Font.GothamBold
 
--- Sidebar
-local side = Instance.new("Frame", main)
-side.Size = UDim2.new(0,150,1,0)
-side.BackgroundColor3 = Color3.fromRGB(22,22,22)
-local stroke = Instance.new("UIStroke", side)
-stroke.Color = Color3.fromRGB(0,255,100); stroke.Thickness = 3
+HomeButton.Parent = Frame
+HomeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+HomeButton.Position = UDim2.new(0.05, 0, 0.2, 0)
+HomeButton.Size = UDim2.new(0, 120, 0, 40)
+HomeButton.Text = "Home"
+HomeButton.TextColor3 = Color3.new(1, 1, 1)
+HomeButton.Font = Enum.Font.Gotham
+HomeButton.TextScaled = true
 
-local logo = Instance.new("TextLabel", side)
-logo.Text = "Glok\nHub v1"
-logo.Size = UDim2.new(1,0,0,120)
-logo.BackgroundTransparency = 1
-logo.TextColor3 = Color3.fromRGB(0,255,100)
-logo.Font = Enum.Font.GothamBlack
-logo.TextSize = 32
-
--- Butonlar
-local function btn(name, y)
-	local b = Instance.new("TextButton", side)
-	b.Size = UDim2.new(1,-20,0,50)
-	b.Position = UDim2.new(0,10,0,y)
-	b.BackgroundColor3 = Color3.fromRGB(28,28,28)
-	b.Text = name
-	b.TextColor3 = Color3.new(1,1,1)
-	b.Font = Enum.Font.GothamBold
-	b.TextSize = 18
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0,12)
-	return b
-end
-
-local home = btn("Home", 130); home.BackgroundColor3 = Color3.fromRGB(0,200,80)
-local movement = btn("Movement", 190)
-local visual = btn("Visual", 250)
-local misc = btn("Misc", 310)
-
--- İçerik
-local content = Instance.new("Frame", main)
-content.Size = UDim2.new(1,-150,1,0)
-content.Position = UDim2.new(150,0,0,0)
-content.BackgroundTransparency = 1
-
--- Fly Menü
-local flymenu = Instance.new("Frame", content)
-flymenu.Size = UDim2.new(1,-20,1,-20)
-flymenu.Position = UDim2.new(0,10,0,10)
-flymenu.BackgroundTransparency = 1
-flymenu.Visible = false
-
-local flytitle = Instance.new("TextLabel", flymenu)
-flytitle.Text = "Fly Kontrol"
-flytitle.Size = UDim2.new(1,0,0,50)
-flytitle.BackgroundTransparency = 1
-flytitle.TextColor3 = Color3.fromRGB(0,255,100)
-flytitle.Font = Enum.Font.GothamBold
-flytitle.TextSize = 30
-
-local flyon = Instance.new("TextButton", flymenu)
-flyon.Size = UDim2.new(0.9,0,0,60)
-flyon.Position = UDim2.new(0.05,0,0,80)
-flyon.BackgroundColor3 = Color3.fromRGB(0,200,0)
-flyon.Text = getgenv().flying and "Fly: AÇIK" or "Fly: KAPALI"
-flyon.TextColor3 = Color3.new(1,1,1)
-flyon.Font = Enum.Font.GothamBold
-flyon.TextSize = 24
-Instance.new("UICorner", flyon).CornerRadius = UDim.new(0,14)
-
-local speedlabel = Instance.new("TextLabel", flymenu)
-speedlabel.Text = "Uçma Hızı: "..getgenv().flyspeed
-speedlabel.Position = UDim2.new(0,0,0,160)
-speedlabel.Size = UDim2.new(1,0,0,40)
-speedlabel.BackgroundTransparency = 1
-speedlabel.TextColor3 = Color3.new(1,1,1)
-speedlabel.Font = Enum.Font.Gotham
-speedlabel.TextSize = 22
-
-local speedslider = Instance.new("TextBox", flymenu)
-speedslider.PlaceholderText = "50-300"
-speedslider.Size = UDim2.new(0.9,0,0,50)
-speedslider.Position = UDim2.new(0.05,0,0,200)
-speedslider.BackgroundColor3 = Color3.fromRGB(40,40,40)
-Instance.new("UICorner", speedslider).CornerRadius = UDim.new(0,12)
-speedslider.FocusLost:Connect(function()
-	local num = tonumber(speedslider.Text)
-	if num and num >= 10 and num <= 500 then
-		getgenv().flyspeed = num
-		speedlabel.Text = "Uçma Hızı: "..num
-	end
-	speedslider.Text = ""
-end)
-
--- Fly sistemi
-local bv
-flyon.MouseButton1Click:Connect(function()
-	getgenv().flying = not getgenv().flying
-	flyon.Text = getgenv().flying and "Fly: AÇIK" or "Fly: KAPALI"
-	flyon.BackgroundColor3 = getgenv().flying and Color3.fromRGB(0,200,0) or Color3.fromRGB(200,0,0)
-	
-	if getgenv().flying then
-		bv = Instance.new("BodyVelocity")
-		bv.Velocity = Vector3.new(0,0,0)
-		bv.MaxForce = Vector3.new(9e9,9e9,9e9)
-		bv.Parent = root
-		repeat
-			wait()
-			root.CFrame = root.CFrame * CFrame.new(0,0,-getgenv().flyspeed*0.1)
-			if uis.TouchEnabled then
-				-- mobil kontrol (parmak basılı tutunca ileri)
-				if uis:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
-					root.CFrame = root.CFrame * CFrame.new(0,0,-getgenv().flyspeed*0.2)
-				end
-			end
-		until not getgenv().flying
-		if bv then bv:Destroy() end
-	end
-end)
-
--- Sayfalar
-home.MouseButton1Click:Connect(function() flymenu.Visible = false end)
-movement.MouseButton1Click:Connect(function() flymenu.Visible = true end)
-
-print("Glok Hub v1 Mobile açıldı!")
+InfoLabel.Parent = Frame
+InfoLabel.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+InfoLabel.Position = UDim2.new(0.05, 0, 0.4, 0)
+InfoLabel.Size = UDim2.new(0.9, 0, 0.5, 0)
+InfoLabel.Text = "Username: "..game.Players.LocalPlayer.Name.."\nAccount Age: "..game.Players.LocalPlayer.AccountAge
+InfoLabel.TextColor3 = Color3.new(1, 1, 1)
+InfoLabel.TextWrapped = true
+InfoLabel.Font = Enum.Font.Gotham
+InfoLabel.TextSize = 18

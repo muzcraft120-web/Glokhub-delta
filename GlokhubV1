@@ -1,125 +1,82 @@
--- Glok Hub v1
--- key: glok2025
+-- Glok Hub v1 - Mobile Edition
+-- key arka planda kontrol ediliyor, ekranda görünmüyor
 
-local player = game.Players.LocalPlayer
-local mouse = player:GetMouse()
-local ts = game:GetService("TweenService")
-local uis = game:GetService("UserInputService")
+local plr = game.Players.LocalPlayer
+local char = plr.Character or plr.CharacterAdded:Wait()
+local hum = char:WaitForChild("Humanoid")
 local rs = game:GetService("RunService")
+local uis = game:GetService("UserInputService")
+local ts = game:GetService("TweenService")
 
-local gui = Instance.new("ScreenGui", player.PlayerGui)
-gui.Name = "GlokHub"
+getgenv().S = {s=16,j=50,fly=false,nc=false,fb=false}
 
-local ana = Instance.new("Frame", gui)
-ana.Size = UDim2.new(0, 400, 0, 480)
-ana.Position = UDim2.new(0.5, -200, 0.5, -240)
-ana.BackgroundColor3 = Color3.fromRGB(26, 26, 34)
-ana.BorderSizePixel = 0
-ana.Visible = false
+-- GUI
+local sg = Instance.new("ScreenGui", plr.PlayerGui)
+sg.ResetOnSpawn = false
 
-Instance.new("UICorner", ana).CornerRadius = UDim.new(0, 12)
-local stroke = Instance.new("UIStroke", ana)
-stroke.Color = Color3.fromRGB(80, 160, 255)
-stroke.Thickness = 2
+local main = Instance.new("Frame", sg)
+main.Size = UDim2.new(0,380,0,500)
+main.Position = UDim2.new(0.5,-190,0.5,-250)
+main.BackgroundColor3 = Color3.fromRGB(20,20,30)
+main.BorderSizePixel = 0
+main.Visible = false
+main.Active = true
+main.Draggable = true
+
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,16)
+local stroke = Instance.new("UIStroke", main)
+stroke.Color = Color3.fromRGB(80,180,255)
+stroke.Thickness = 3
 
 -- başlık
-local baslik = Instance.new("Frame", ana)
-baslik.Size = UDim2.new(1,0,0,40)
-baslik.BackgroundColor3 = Color3.fromRGB(18,18,28)
+local top = Instance.new("Frame", main)
+top.Size = UDim2.new(1,0,0,50)
+top.BackgroundColor3 = Color3.fromRGB(15,15,25)
 
-local isim = Instance.new("TextLabel", baslik)
+local isim = Instance.new("TextLabel", top)
 isim.Text = "Glok Hub v1"
 isim.Font = Enum.Font.GothamBold
-isim.TextSize = 17
+isim.TextSize = 20
 isim.TextColor3 = Color3.new(1,1,1)
 isim.BackgroundTransparency = 1
-isim.Size = UDim2.new(1,-100,1,0)
-isim.Position = UDim2.new(0,12,0,0)
+isim.Size = UDim2.new(1,0,1,0)
+isim.TextXAlignment = Enum.TextXAlignment.Left
+isim.Position = UDim2.new(0,18,0,0)
 
--- küçült kapat
-local kucult = Instance.new("TextButton", baslik)
-kucult.Text = "−"
-kucult.Size = UDim2.new(0,32,0,32)
-kucult.Position = UDim2.new(1,-70,0,4)
-kucult.BackgroundColor3 = Color3.fromRGB(255,170,0)
-kucult.TextColor3 = Color3.new(1,1,1)
-kucult.Font = Enum.Font.GothamBold
+-- küçült/kapat
+local min = Instance.new("TextButton", top)
+min.Text = "−"; min.Size = UDim2.new(0,40,0,40)
+min.Position = UDim2.new(1,-85,0,5)
+min.BackgroundColor3 = Color3.fromRGB(255,180,0)
+min.TextColor3 = Color3.new(1,1,1)
 
-local kapat = Instance.new("TextButton", baslik)
-kapat.Text = "×"
-kapat.Size = UDim2.new(0,32,0,32)
-kapat.Position = UDim2.new(1,-36,0,4)
-kapat.BackgroundColor3 = Color3.fromRGB(255,70,70)
-kapat.TextColor3 = Color3.new(1,1,1)
-kapat.Font = Enum.Font.GothamBold
+local close = Instance.new("TextButton", top)
+close.Text = "×"; close.Size = UDim2.new(0,40,0,40)
+close.Position = UDim2.new(1,-45,0,5)
+close.BackgroundColor3 = Color3.fromRGB(255,70,70)
+close.TextColor3 = Color3.new(1,1,1)
 
-Instance.new("UICorner", kucult).CornerRadius = UDim.new(0,8)
-Instance.new("UICorner", kapat).CornerRadius = UDim.new(0,8)
+Instance.new("UICorner", min).CornerRadius = UDim.new(0,10)
+Instance.new("UICorner", close).CornerRadius = UDim.new(0,10)
 
 local kucuk = false
-kucult.MouseButton1Click:Connect(function()
+min.MouseButton1Click:Connect(function()
 	kucuk = not kucuk
-	ts:Create(ana, TweenInfo.new(0.3), {Size = kucuk and UDim2.new(0,400,0,40) or UDim2.new(0,400,0,480)}):Play()
+	ts:Create(main, TweenInfo.new(0.3), {Size = kucuk and UDim2.new(0,380,0,50) or UDim2.new(0,380,0,500)}):Play()
 end)
-kapat.MouseButton1Click:Connect(function() gui:Destroy() end)
+close.MouseButton1Click:Connect(function() sg:Destroy() end)
 
--- sürükleme
-local surukle = false
-local basla, baslaPos
-baslik.InputBegan:Connect(function(inp)
-	if inp.UserInputType == Enum.UserInputType.MouseButton1 then
-		surukle = true
-		basla = inp.Position
-		baslaPos = ana.Position
-	end
-end)
-baslik.InputChanged:Connect(function(inp)
-	if surukle and (inp.UserInputType == Enum.UserInputType.MouseMovement) then
-		local fark = inp.Position - basla
-		ana.Position = UDim2.new(baslaPos.X.Scale, baslaPos.X.Offset + fark.X, baslaPos.Y.Scale, baslaPos.Y.Offset + fark.Y)
-	end
-end)
-uis.InputEnded:Connect(function(inp)
-	if inp.UserInputType == Enum.UserInputType.MouseButton1 then surukle = false end
-end)
+-- key kontrol (görünmüyor)
+if not getgenv().glokkey then
+	main.Visible = true
+	wait(1)
+	sg:Destroy()
+	return
+end
 
--- key ekranı
-local keyekran = Instance.new("Frame", gui)
-keyekran.Size = UDim2.new(0,300,0,160)
-keyekran.Position = UDim2.new(0.5,-150,0.5,-80)
-keyekran.BackgroundColor3 = Color3.fromRGB(26,26,34)
-Instance.new("UICorner", keyekran).CornerRadius = UDim.new(0,12)
-Instance.new("UIStroke", keyekran).Color = Color3.fromRGB(80,160,255); Instance.new("UIStroke", keyekran).Thickness = 2
+-- özellikler buraya gelecek, ama şimdilik sade açılıyor
+main.Visible = true
+print("Glok Hub v1 mobile açıldı")
 
-local keyyazi = Instance.new("TextLabel", keyekran)
-keyyazi.Text = "Key gir:"
-keyyazi.Size = UDim2.new(1,0,0,40)
-keyyazi.BackgroundTransparency = 1
-keyyazi.Font = Enum.Font.Gotham
-keyyazi.TextColor3 = Color3.new(1,1,1)
-
-local kutu = Instance.new("TextBox", keyekran)
-kutu.PlaceholderText = "glok2025"
-kutu.Size = UDim2.new(0.8,0,0,35)
-kutu.Position = UDim2.new(0.1,0,0.4,0)
-kutu.BackgroundColor3 = Color3.fromRGB(40,40,50)
-Instance.new("UICorner", kutu).CornerRadius = UDim.new(0,8)
-
-local gir = Instance.new("TextButton", keyekran)
-gir.Text = "Gir"
-gir.Size = UDim2.new(0.6,0,0,35)
-gir.Position = UDim2.new(0.2,0,0.7,0)
-gir.BackgroundColor3 = Color3.fromRGB(80,160,255)
-Instance.new("UICorner", gir).CornerRadius = UDim.new(0,8)
-
-gir.MouseButton1Click:Connect(function()
-	if kutu.Text == "glok2025" then
-		keyekran:Destroy()
-		ana.Visible = true
-		print("Glok Hub v1 açıldı!")
-	else
-		kutu.PlaceholderText = "yanlış amk"
-	end
-end)
-
-print("Glok Hub v1 yüklendi - key: glok2025")
+-- örnek özellikler (sonra doldururuz)
+-- fly F, noclip H, speed/jump slider vs.

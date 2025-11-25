@@ -1,46 +1,131 @@
---// Example Roblox Hub UI (Eğitim Amaçlı)
---// Herhangi bir hile içermez.
+--// HEROBRINE HUB V1.0 (GUI SCRIPT) – HİLESİZ, GÜVENLİ
+local player = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.ResetOnSpawn = false
 
--- GUI oluştur
-local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
-local Title = Instance.new("TextLabel")
-local HomeButton = Instance.new("TextButton")
-local InfoLabel = Instance.new("TextLabel")
+-- MAIN FRAME
+local frame = Instance.new("Frame", gui)
+frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+frame.Size = UDim2.new(0, 450, 0, 300)
+frame.Position = UDim2.new(0.3, 0, 0.3, 0)
+frame.Active = true
+frame.Draggable = true
 
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+-- TOP BAR
+local topBar = Instance.new("Frame", frame)
+topBar.Size = UDim2.new(1, 0, 0, 30)
+topBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+topBar.BorderSizePixel = 0
 
-Frame.Parent = ScreenGui
-Frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-Frame.Position = UDim2.new(0.3, 0, 0.3, 0)
-Frame.Size = UDim2.new(0, 400, 0, 300)
-Frame.BorderSizePixel = 0
-Frame.Active = true
-Frame.Draggable = true
+local title = Instance.new("TextLabel", topBar)
+title.Size = UDim2.new(0.6, 0, 1, 0)
+title.BackgroundTransparency = 1
+title.Text = "HEROBRINE HUB V1.0"
+title.Font = Enum.Font.GothamBold
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextScaled = true
 
-Title.Parent = Frame
-Title.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.Text = "My Hub V1.0"
-Title.TextColor3 = Color3.new(1, 1, 1)
-Title.TextScaled = true
-Title.Font = Enum.Font.GothamBold
+-- ICON BUTTONS
+local btn_min = Instance.new("TextButton", topBar)
+btn_min.Size = UDim2.new(0, 40, 1, 0)
+btn_min.Position = UDim2.new(0.6, 0, 0, 0)
+btn_min.Text = "_"
+btn_min.Font = Enum.Font.GothamBold
+btn_min.TextScaled = true
+btn_min.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+btn_min.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-HomeButton.Parent = Frame
-HomeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-HomeButton.Position = UDim2.new(0.05, 0, 0.2, 0)
-HomeButton.Size = UDim2.new(0, 120, 0, 40)
-HomeButton.Text = "Home"
-HomeButton.TextColor3 = Color3.new(1, 1, 1)
-HomeButton.Font = Enum.Font.Gotham
-HomeButton.TextScaled = true
+local btn_max = Instance.new("TextButton", topBar)
+btn_max.Size = UDim2.new(0, 40, 1, 0)
+btn_max.Position = UDim2.new(0.6 + 0.09, 0, 0, 0)
+btn_max.Text = "□"
+btn_max.Font = Enum.Font.GothamBold
+btn_max.TextScaled = true
+btn_max.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+btn_max.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-InfoLabel.Parent = Frame
-InfoLabel.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-InfoLabel.Position = UDim2.new(0.05, 0, 0.4, 0)
-InfoLabel.Size = UDim2.new(0.9, 0, 0.5, 0)
-InfoLabel.Text = "Username: "..game.Players.LocalPlayer.Name.."\nAccount Age: "..game.Players.LocalPlayer.AccountAge
-InfoLabel.TextColor3 = Color3.new(1, 1, 1)
-InfoLabel.TextWrapped = true
-InfoLabel.Font = Enum.Font.Gotham
-InfoLabel.TextSize = 18
+local btn_close = Instance.new("TextButton", topBar)
+btn_close.Size = UDim2.new(0, 40, 1, 0)
+btn_close.Position = UDim2.new(0.6 + 0.18, 0, 0, 0)
+btn_close.Text = "X"
+btn_close.Font = Enum.Font.GothamBold
+btn_close.TextScaled = true
+btn_close.BackgroundColor3 = Color3.fromRGB(120, 40, 40)
+btn_close.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+-- CONTENT FRAME
+local content = Instance.new("Frame", frame)
+content.Size = UDim2.new(1, -10, 1, -40)
+content.Position = UDim2.new(0, 5, 0, 35)
+content.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
+content.BorderSizePixel = 0
+
+local pageLabel = Instance.new("TextLabel", content)
+pageLabel.Size = UDim2.new(1, 0, 1, 0)
+pageLabel.BackgroundTransparency = 1
+pageLabel.Text = "Home\n\nUsername: "..player.Name..
+                 "\nAccount Age: "..player.AccountAge.." days"
+pageLabel.TextColor3 = Color3.fromRGB(255,255,255)
+pageLabel.TextScaled = true
+pageLabel.Font = Enum.Font.Gotham
+
+-- SIDE BUTTONS
+local buttons = {"Home", "Tools", "Settings", "Profile"}
+local y = 35
+
+for _, name in ipairs(buttons) do
+    local b = Instance.new("TextButton", frame)
+    b.Size = UDim2.new(0, 90, 0, 30)
+    b.Position = UDim2.new(0, -95, 0, y)
+    b.Text = name
+    b.Font = Enum.Font.GothamBold
+    b.TextColor3 = Color3.new(1,1,1)
+    b.BackgroundColor3 = Color3.fromRGB(55,55,55)
+    y = y + 40
+
+    b.MouseButton1Click:Connect(function()
+        if name == "Home" then
+            pageLabel.Text = "HOME\n\nUsername: "..player.Name..
+            "\nAccount Age: "..player.AccountAge
+        elseif name == "Tools" then
+            pageLabel.Text = "TOOLS\n\n- FOV Control (Demo)\n- Light Mode\n- Transparency"
+        elseif name == "Settings" then
+            pageLabel.Text = "SETTINGS\n\n- Theme Color\n- UI Size\n- Animations"
+        elseif name == "Profile" then
+            pageLabel.Text = "PROFILE\n\nDisplay Name: "..player.DisplayName
+        end
+    end)
+end
+
+-- MINIMIZE
+local originalSize = frame.Size
+btn_min.MouseButton1Click:Connect(function()
+    frame.Size = UDim2.new(0, 450, 0, 35)
+end)
+
+-- MAXIMIZE
+btn_max.MouseButton1Click:Connect(function()
+    frame.Size = originalSize
+end)
+
+-- CLOSE (panel tamamen kapanır)
+local reopenBtn = Instance.new("TextButton", gui)
+reopenBtn.Size = UDim2.new(0, 80, 0, 40)
+reopenBtn.Position = UDim2.new(1, -90, 1, -50)
+reopenBtn.Text = "HUB"
+reopenBtn.Font = Enum.Font.GothamBold
+reopenBtn.TextScaled = true
+reopenBtn.BackgroundColor3 = Color3.fromRGB(40, 120, 40)
+reopenBtn.TextColor3 = Color3.fromRGB(255,255,255)
+reopenBtn.Visible = false
+
+btn_close.MouseButton1Click:Connect(function()
+    frame.Visible = false
+    reopenBtn.Visible = true
+end)
+
+-- REOPEN
+reopenBtn.MouseButton1Click:Connect(function()
+    frame.Visible = true
+    reopenBtn.Visible = false
+end)

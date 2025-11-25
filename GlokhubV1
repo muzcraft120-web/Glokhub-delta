@@ -1,82 +1,322 @@
--- Glok Hub v1 - Mobile Edition
--- key arka planda kontrol ediliyor, ekranda görünmüyor
+-- Glok Hub v2 - Tam Çalışan Mobil/PC Edition (Kasım 2025)
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Lighting = game:GetService("Lighting")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
-local plr = game.Players.LocalPlayer
-local char = plr.Character or plr.CharacterAdded:Wait()
-local hum = char:WaitForChild("Humanoid")
-local rs = game:GetService("RunService")
-local uis = game:GetService("UserInputService")
-local ts = game:GetService("TweenService")
+getgenv().Glok = {Speed = 16, Jump = 50, Fly = false, Noclip = false, Fullbright = false}
 
-getgenv().S = {s=16,j=50,fly=false,nc=false,fb=false}
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "GlokHubV2"
+ScreenGui.Parent = playerGui
+ScreenGui.ResetOnSpawn = false
 
--- GUI
-local sg = Instance.new("ScreenGui", plr.PlayerGui)
-sg.ResetOnSpawn = false
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+MainFrame.BorderSizePixel = 0
+MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+MainFrame.Size = UDim2.new(0, 400, 0, 450)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.ClipsDescendants = true
 
-local main = Instance.new("Frame", sg)
-main.Size = UDim2.new(0,380,0,500)
-main.Position = UDim2.new(0.5,-190,0.5,-250)
-main.BackgroundColor3 = Color3.fromRGB(20,20,30)
-main.BorderSizePixel = 0
-main.Visible = false
-main.Active = true
-main.Draggable = true
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 16)
+UICorner.Parent = MainFrame
 
-Instance.new("UICorner", main).CornerRadius = UDim.new(0,16)
-local stroke = Instance.new("UIStroke", main)
-stroke.Color = Color3.fromRGB(80,180,255)
-stroke.Thickness = 3
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Color = Color3.fromRGB(100, 150, 255)
+UIStroke.Thickness = 2
+UIStroke.Parent = MainFrame
 
--- başlık
-local top = Instance.new("Frame", main)
-top.Size = UDim2.new(1,0,0,50)
-top.BackgroundColor3 = Color3.fromRGB(15,15,25)
+local TitleBar = Instance.new("Frame")
+TitleBar.Name = "TitleBar"
+TitleBar.Parent = MainFrame
+TitleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+TitleBar.BorderSizePixel = 0
+TitleBar.Position = UDim2.new(0, 0, 0, 0)
+TitleBar.Size = UDim2.new(1, 0, 0, 50)
 
-local isim = Instance.new("TextLabel", top)
-isim.Text = "Glok Hub v1"
-isim.Font = Enum.Font.GothamBold
-isim.TextSize = 20
-isim.TextColor3 = Color3.new(1,1,1)
-isim.BackgroundTransparency = 1
-isim.Size = UDim2.new(1,0,1,0)
-isim.TextXAlignment = Enum.TextXAlignment.Left
-isim.Position = UDim2.new(0,18,0,0)
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 16)
+TitleCorner.Parent = TitleBar
 
--- küçült/kapat
-local min = Instance.new("TextButton", top)
-min.Text = "−"; min.Size = UDim2.new(0,40,0,40)
-min.Position = UDim2.new(1,-85,0,5)
-min.BackgroundColor3 = Color3.fromRGB(255,180,0)
-min.TextColor3 = Color3.new(1,1,1)
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Parent = TitleBar
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Position = UDim2.new(0, 15, 0, 0)
+TitleLabel.Size = UDim2.new(0.7, 0, 1, 0)
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.Text = "Glok Hub v2"
+TitleLabel.TextColor3 = Color3.new(1, 1, 1)
+TitleLabel.TextScaled = true
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-local close = Instance.new("TextButton", top)
-close.Text = "×"; close.Size = UDim2.new(0,40,0,40)
-close.Position = UDim2.new(1,-45,0,5)
-close.BackgroundColor3 = Color3.fromRGB(255,70,70)
-close.TextColor3 = Color3.new(1,1,1)
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Parent = TitleBar
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+MinimizeBtn.BorderSizePixel = 0
+MinimizeBtn.Position = UDim2.new(1, -80, 0, 8)
+MinimizeBtn.Size = UDim2.new(0, 34, 0, 34)
+MinimizeBtn.Font = Enum.Font.GothamBold
+MinimizeBtn.Text = "−"
+MinimizeBtn.TextColor3 = Color3.new(1, 1, 1)
+MinimizeBtn.TextScaled = true
 
-Instance.new("UICorner", min).CornerRadius = UDim.new(0,10)
-Instance.new("UICorner", close).CornerRadius = UDim.new(0,10)
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Parent = TitleBar
+CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
+CloseBtn.BorderSizePixel = 0
+CloseBtn.Position = UDim2.new(1, -42, 0, 8)
+CloseBtn.Size = UDim2.new(0, 34, 0, 34)
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.Text = "×"
+CloseBtn.TextColor3 = Color3.new(1, 1, 1)
+CloseBtn.TextScaled = true
 
-local kucuk = false
-min.MouseButton1Click:Connect(function()
-	kucuk = not kucuk
-	ts:Create(main, TweenInfo.new(0.3), {Size = kucuk and UDim2.new(0,380,0,50) or UDim2.new(0,380,0,500)}):Play()
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(0, 8)
+MinCorner.Parent = MinimizeBtn
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 8)
+CloseCorner.Parent = CloseBtn
+
+local Minimized = false
+MinimizeBtn.MouseButton1Click:Connect(function()
+    Minimized = not Minimized
+    TweenService:Create(MainFrame, TweenInfo.new(0.3), {Size = Minimized and UDim2.new(0, 400, 0, 50) or UDim2.new(0, 400, 0, 450)}):Play()
 end)
-close.MouseButton1Click:Connect(function() sg:Destroy() end)
 
--- key kontrol (görünmüyor)
-if not getgenv().glokkey then
-	main.Visible = true
-	wait(1)
-	sg:Destroy()
-	return
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+local ScrollFrame = Instance.new("ScrollingFrame")
+ScrollFrame.Parent = MainFrame
+ScrollFrame.BackgroundTransparency = 1
+ScrollFrame.BorderSizePixel = 0
+ScrollFrame.Position = UDim2.new(0, 0, 0, 50)
+ScrollFrame.Size = UDim2.new(1, 0, 1, -50)
+ScrollFrame.ScrollBarThickness = 8
+ScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 150, 255)
+ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 600)
+
+-- Infinite Yield Button
+local IYBtn = Instance.new("TextButton")
+IYBtn.Parent = ScrollFrame
+IYBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+IYBtn.BorderSizePixel = 0
+IYBtn.Position = UDim2.new(0, 10, 0, 10)
+IYBtn.Size = UDim2.new(1, -20, 0, 50)
+IYBtn.Font = Enum.Font.GothamBold
+IYBtn.Text = "Load Infinite Yield"
+IYBtn.TextColor3 = Color3.new(1, 1, 1)
+IYBtn.TextScaled = true
+local IYCorner = Instance.new("UICorner")
+IYCorner.CornerRadius = UDim.new(0, 10)
+IYCorner.Parent = IYBtn
+IYBtn.MouseButton1Click:Connect(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+end)
+
+-- Toggle Function
+local function makeToggle(name, posY, callback)
+    local Frame = Instance.new("Frame")
+    Frame.Parent = ScrollFrame
+    Frame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    Frame.Position = UDim2.new(0, 10, 0, posY)
+    Frame.Size = UDim2.new(1, -20, 0, 50)
+    local FCorner = Instance.new("UICorner")
+    FCorner.CornerRadius = UDim.new(0, 10)
+    FCorner.Parent = Frame
+
+    local Label = Instance.new("TextLabel")
+    Label.Parent = Frame
+    Label.BackgroundTransparency = 1
+    Label.Position = UDim2.new(0, 15, 0, 0)
+    Label.Size = UDim2.new(0.7, 0, 1, 0)
+    Label.Font = Enum.Font.Gotham
+    Label.Text = name
+    Label.TextColor3 = Color3.new(1, 1, 1)
+    Label.TextScaled = true
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+
+    local Toggle = Instance.new("TextButton")
+    Toggle.Parent = Frame
+    Toggle.BackgroundColor3 = Color3.fromRGB(200, 100, 100)
+    Toggle.Position = UDim2.new(1, -60, 0, 10)
+    Toggle.Size = UDim2.new(0, 30, 0, 30)
+    Toggle.Text = ""
+    local TCorner = Instance.new("UICorner")
+    TCorner.CornerRadius = UDim.new(0, 15)
+    TCorner.Parent = Toggle
+
+    local Circle = Instance.new("Frame")
+    Circle.Parent = Toggle
+    Circle.BackgroundColor3 = Color3.new(1, 1, 1)
+    Circle.Position = UDim2.new(0, 2, 0, 2)
+    Circle.Size = UDim2.new(0, 26, 0, 26)
+    local CC = Instance.new("UICorner")
+    CC.CornerRadius = UDim.new(1, 13)
+    CC.Parent = Circle
+
+    local tog = false
+    Toggle.MouseButton1Click:Connect(function()
+        tog = not tog
+        TweenService:Create(Circle, TweenInfo.new(0.2), {Position = tog and UDim2.new(1, -28, 0, 2) or UDim2.new(0, 2, 0, 2)}):Play()
+        TweenService:Create(Toggle, TweenInfo.new(0.2), {BackgroundColor3 = tog and Color3.fromRGB(100, 200, 100) or Color3.fromRGB(200, 100, 100)}):Play()
+        callback(tog)
+    end)
 end
 
--- özellikler buraya gelecek, ama şimdilik sade açılıyor
-main.Visible = true
-print("Glok Hub v1 mobile açıldı")
+-- Slider Function (Simple)
+local function makeSlider(name, posY, min, max, default, callback)
+    local Frame = Instance.new("Frame")
+    Frame.Parent = ScrollFrame
+    Frame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    Frame.Position = UDim2.new(0, 10, 0, posY)
+    Frame.Size = UDim2.new(1, -20, 0, 60)
+    local FCorner = Instance.new("UICorner")
+    FCorner.CornerRadius = UDim.new(0, 10)
+    FCorner.Parent = Frame
 
--- örnek özellikler (sonra doldururuz)
--- fly F, noclip H, speed/jump slider vs.
+    local Label = Instance.new("TextLabel")
+    Label.Parent = Frame
+    Label.BackgroundTransparency = 1
+    Label.Position = UDim2.new(0, 15, 0, 0)
+    Label.Size = UDim2.new(0.5, 0, 0.5, 0)
+    Label.Font = Enum.Font.Gotham
+    Label.Text = name
+    Label.TextColor3 = Color3.new(1, 1, 1)
+    Label.TextScaled = true
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+
+    local ValueLabel = Instance.new("TextLabel")
+    ValueLabel.Parent = Frame
+    ValueLabel.BackgroundTransparency = 1
+    ValueLabel.Position = UDim2.new(0.55, 0, 0, 0)
+    ValueLabel.Size = UDim2.new(0.3, 0, 0.5, 0)
+    ValueLabel.Font = Enum.Font.GothamBold
+    ValueLabel.Text = tostring(default)
+    ValueLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
+    ValueLabel.TextScaled = true
+
+    local SliderBar = Instance.new("Frame")
+    SliderBar.Parent = Frame
+    SliderBar.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+    SliderBar.Position = UDim2.new(0, 0, 0.6, 0)
+    SliderBar.Size = UDim2.new(1, 0, 0.25, 0)
+    local SCorner = Instance.new("UICorner")
+    SCorner.CornerRadius = UDim.new(0, 6)
+    SCorner.Parent = SliderBar
+
+    local Fill = Instance.new("Frame")
+    Fill.Parent = SliderBar
+    Fill.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
+    Fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+    local FCorner2 = Instance.new("UICorner")
+    FCorner2.CornerRadius = UDim.new(0, 6)
+    FCorner2.Parent = Fill
+
+    local dragging = false
+    SliderBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+    RunService.RenderStepped:Connect(function()
+        if dragging then
+            local mousePos = UserInputService:GetMouseLocation()
+            local relative = math.clamp((mousePos.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
+            Fill.Size = UDim2.new(relative, 0, 1, 0)
+            local val = math.floor(min + (max - min) * relative)
+            ValueLabel.Text = tostring(val)
+            callback(val)
+        end
+    end)
+end
+
+-- Toggles & Sliders
+makeToggle("Fullbright", 70, function(state)
+    getgenv().Glok.Fullbright = state
+    if state then
+        Lighting.Brightness = 2
+        Lighting.GlobalShadows = false
+        Lighting.FogEnd = 9e9
+        Lighting.FogStart = 0
+        Lighting.ClockTime = 0.5
+        Lighting.Ambient = Color3.new(1, 1, 1)
+    else
+        Lighting.Brightness = 1
+        Lighting.GlobalShadows = true
+        Lighting.FogEnd = 100000
+        Lighting.FogStart = 0
+        Lighting.ClockTime = 14
+        Lighting.Ambient = Color3.new(0.4, 0.4, 0.4)
+    end
+end)
+
+makeSlider("Speed", 130, 16, 500, 100, function(val)
+    getgenv().Glok.Speed = val
+end)
+
+makeSlider("Jump Power", 200, 50, 500, 100, function(val)
+    getgenv().Glok.Jump = val
+end)
+
+makeToggle("Fly (F Tuşu)", 270, function(state)
+    getgenv().Glok.Fly = state
+end)
+
+makeToggle("Noclip (H Tuşu)", 340, function(state)
+    getgenv().Glok.Noclip = state
+end)
+
+-- Loops
+RunService.Stepped:Connect(function()
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = getgenv().Glok.Speed
+        player.Character.Humanoid.JumpPower = getgenv().Glok.Jump
+        if getgenv().Glok.Noclip then
+            for _, part in pairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end
+end)
+
+-- Fly
+UserInputService.InputBegan:Connect(function(key)
+    if key.KeyCode == Enum.KeyCode.F then
+        getgenv().Glok.Fly = not getgenv().Glok.Fly
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local root = player.Character.HumanoidRootPart
+            if getgenv().Glok.Fly then
+                local bv = Instance.new("BodyVelocity")
+                bv.MaxForce = Vector3.new(4000, 4000, 4000)
+                bv.Velocity = Vector3.new(0, 0, 0)
+                bv.Parent = root
+                rs.Heartbeat:Connect(function()
+                    if getgenv().Glok.Fly then
+                        bv.Velocity = workspace.CurrentCamera.CFrame.LookVector * 50
+                    end
+                end)
+            end
+        end
+    end
+end)
+
+print("Glok Hub v2 Yüklendi! - Fly: F, Noclip: H")

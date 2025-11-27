@@ -1,131 +1,134 @@
---// HEROBRINE HUB V1.0 (GUI SCRIPT) – HİLESİZ, GÜVENLİ
-local player = game.Players.LocalPlayer
-local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-gui.ResetOnSpawn = false
+-- Delta Hub - Profesyonel Universal Script
+-- Delta Executor uyumlu | Kavo UI Library (RGB Renkli)
+-- Özellikler: Fly, Speed Hack, Noclip, Chat Bypass
+-- Küçültme/Açma butonu + Logo
 
--- MAIN FRAME
-local frame = Instance.new("Frame", gui)
-frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-frame.Size = UDim2.new(0, 450, 0, 300)
-frame.Position = UDim2.new(0.3, 0, 0.3, 0)
-frame.Active = true
-frame.Draggable = true
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("Delta Hub", "Ocean")
 
--- TOP BAR
-local topBar = Instance.new("Frame", frame)
-topBar.Size = UDim2.new(1, 0, 0, 30)
-topBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-topBar.BorderSizePixel = 0
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid")
+local RootPart = Character:WaitForChild("HumanoidRootPart")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
 
-local title = Instance.new("TextLabel", topBar)
-title.Size = UDim2.new(0.6, 0, 1, 0)
-title.BackgroundTransparency = 1
-title.Text = "HEROBRINE HUB V1.0"
-title.Font = Enum.Font.GothamBold
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.TextScaled = true
+-- Değişkenler
+local flying = false
+local flySpeed = 100
+local walkSpeed = 16
+local noclip = false
+local chatBypassEnabled = false
 
--- ICON BUTTONS
-local btn_min = Instance.new("TextButton", topBar)
-btn_min.Size = UDim2.new(0, 40, 1, 0)
-btn_min.Position = UDim2.new(0.6, 0, 0, 0)
-btn_min.Text = "_"
-btn_min.Font = Enum.Font.GothamBold
-btn_min.TextScaled = true
-btn_min.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-btn_min.TextColor3 = Color3.fromRGB(255, 255, 255)
+-- Fly Fonksiyonu
+local function startFly()
+    if not Character or not Character:FindFirstChild("HumanoidRootPart") then return end
+    flying = true
+    local bv = Instance.new("BodyVelocity")
+    bv.Velocity = Vector3.new(0,0,0)
+    bv.MaxForce = Vector3.new(9e9,9e9,9e9)
+    bv.Parent = RootPart
+    local bg = Instance.new("BodyGyro")
+    bg.P = 9e9
+    bg.MaxTorque = Vector3.new(9e9,9e9,9e9)
+    bg.CFrame = RootPart.CFrame
+    bg.Parent = RootPart
 
-local btn_max = Instance.new("TextButton", topBar)
-btn_max.Size = UDim2.new(0, 40, 1, 0)
-btn_max.Position = UDim2.new(0.6 + 0.09, 0, 0, 0)
-btn_max.Text = "□"
-btn_max.Font = Enum.Font.GothamBold
-btn_max.TextScaled = true
-btn_max.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-btn_max.TextColor3 = Color3.fromRGB(255, 255, 255)
+    spawn(function()
+        while flying and RootPart and RootPart.Parent do
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                RootPart.CFrame = RootPart.CFrame * CFrame.new(0,0,-flySpeed*RunService.Heartbeat:Wait())
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                RootPart.CFrame = RootPart.CFrame * CFrame.new(0,0,flySpeed*RunService.Heartbeat:Wait())
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                RootPart.CFrame = RootPart.CFrame * CFrame.new(-flySpeed*RunService.Heartbeat:Wait(),0,0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                RootPart.CFrame = RootPart.CFrame * CFrame.new(flySpeed*RunService.Heartbeat:Wait(),0,0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                RootPart.CFrame = RootPart.CFrame * CFrame.new(0,flySpeed*RunService.Heartbeat:Wait(),0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                RootPart.CFrame = RootPart.CFrame * CFrame.new(0,-flySpeed*RunService.Heartbeat:Wait(),0)
+            end
+        end
+        bv:Destroy()
+        if bg then bg:Destroy() end
+    end)
+end
 
-local btn_close = Instance.new("TextButton", topBar)
-btn_close.Size = UDim2.new(0, 40, 1, 0)
-btn_close.Position = UDim2.new(0.6 + 0.18, 0, 0, 0)
-btn_close.Text = "X"
-btn_close.Font = Enum.Font.GothamBold
-btn_close.TextScaled = true
-btn_close.BackgroundColor3 = Color3.fromRGB(120, 40, 40)
-btn_close.TextColor3 = Color3.fromRGB(255, 255, 255)
+local function stopFly()
+    flying = false
+end
 
--- CONTENT FRAME
-local content = Instance.new("Frame", frame)
-content.Size = UDim2.new(1, -10, 1, -40)
-content.Position = UDim2.new(0, 5, 0, 35)
-content.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
-content.BorderSizePixel = 0
-
-local pageLabel = Instance.new("TextLabel", content)
-pageLabel.Size = UDim2.new(1, 0, 1, 0)
-pageLabel.BackgroundTransparency = 1
-pageLabel.Text = "Home\n\nUsername: "..player.Name..
-                 "\nAccount Age: "..player.AccountAge.." days"
-pageLabel.TextColor3 = Color3.fromRGB(255,255,255)
-pageLabel.TextScaled = true
-pageLabel.Font = Enum.Font.Gotham
-
--- SIDE BUTTONS
-local buttons = {"Home", "Tools", "Settings", "Profile"}
-local y = 35
-
-for _, name in ipairs(buttons) do
-    local b = Instance.new("TextButton", frame)
-    b.Size = UDim2.new(0, 90, 0, 30)
-    b.Position = UDim2.new(0, -95, 0, y)
-    b.Text = name
-    b.Font = Enum.Font.GothamBold
-    b.TextColor3 = Color3.new(1,1,1)
-    b.BackgroundColor3 = Color3.fromRGB(55,55,55)
-    y = y + 40
-
-    b.MouseButton1Click:Connect(function()
-        if name == "Home" then
-            pageLabel.Text = "HOME\n\nUsername: "..player.Name..
-            "\nAccount Age: "..player.AccountAge
-        elseif name == "Tools" then
-            pageLabel.Text = "TOOLS\n\n- FOV Control (Demo)\n- Light Mode\n- Transparency"
-        elseif name == "Settings" then
-            pageLabel.Text = "SETTINGS\n\n- Theme Color\n- UI Size\n- Animations"
-        elseif name == "Profile" then
-            pageLabel.Text = "PROFILE\n\nDisplay Name: "..player.DisplayName
+-- Noclip
+local function toggleNoclip()
+    noclip = not noclip
+    RunService.Stepped:Connect(function()
+        if noclip and Character then
+            for _, part in pairs(Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
         end
     end)
 end
 
--- MINIMIZE
-local originalSize = frame.Size
-btn_min.MouseButton1Click:Connect(function()
-    frame.Size = UDim2.new(0, 450, 0, 35)
+-- Chat Bypass (Basit ama etkili yöntem)
+local oldNamecall
+oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+    local method = getnamecallmethod()
+    local args = {...}
+    if chatBypassEnabled and method == "Fire" and tostring(self) == "SayMessageRequest" then
+        args[1] = args[1] .. " 󠀡" -- Görünmez karakter
+        return oldNamecall(self, unpack(args))
+    end
+    return oldNamecall(self, ...)
 end)
 
--- MAXIMIZE
-btn_max.MouseButton1Click:Connect(function()
-    frame.Size = originalSize
+-- TAB: Hareket Hileleri
+local Movement = Window:NewTab("Hareket Hileleri")
+local MoveSec = Movement:NewSection("Ana Kontroller")
+
+MoveSec:NewToggle("Uçma (Fly)", "WASD + Space/Ctrl ile yönlendirme", function(state)
+    if state then
+        startFly()
+    else
+        stopFly()
+    end
 end)
 
--- CLOSE (panel tamamen kapanır)
-local reopenBtn = Instance.new("TextButton", gui)
-reopenBtn.Size = UDim2.new(0, 80, 0, 40)
-reopenBtn.Position = UDim2.new(1, -90, 1, -50)
-reopenBtn.Text = "HUB"
-reopenBtn.Font = Enum.Font.GothamBold
-reopenBtn.TextScaled = true
-reopenBtn.BackgroundColor3 = Color3.fromRGB(40, 120, 40)
-reopenBtn.TextColor3 = Color3.fromRGB(255,255,255)
-reopenBtn.Visible = false
-
-btn_close.MouseButton1Click:Connect(function()
-    frame.Visible = false
-    reopenBtn.Visible = true
+MoveSec:NewSlider("Uçma Hızı", "1-500 arası", 500, 1, function(v)
+    flySpeed = v
 end)
 
--- REOPEN
-reopenBtn.MouseButton1Click:Connect(function()
-    frame.Visible = true
-    reopenBtn.Visible = false
+MoveSec:NewSlider("Yürüme Hızı", "16-300 arası", 300, 16, function(v)
+    Humanoid.WalkSpeed = v
 end)
+
+MoveSec:NewToggle("Noclip", "Duvarlardan geç", function(state)
+    toggleNoclip()
+end)
+
+-- TAB: Diğer
+local Other = Window:NewTab("Diğer")
+local OtherSec = Other:NewSection("Ek Özellikler")
+
+OtherSec:NewToggle("Chat Bypass", "Spam ve filtre atlatma", function(state)
+    chatBypassEnabled = state
+end)
+
+OtherSec:NewButton("Karakteri Yenile", "Respawn", function()
+    LocalPlayer:LoadCharacter()
+end)
+
+-- Küçültme/Açma butonu + Logo
+Library:Toggle()
+
+print("Delta Hub başarıyla yüklendi.")

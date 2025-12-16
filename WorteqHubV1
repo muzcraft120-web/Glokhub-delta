@@ -1,0 +1,496 @@
+-- EXECUTOR İÇİN ÖZEL VERSİYON
+-- Bu scripti direkt executor'a yapıştır ve çalıştır
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- Ayarlar
+local defaultSpeed = 16
+local maxSpeed = 100
+local doubleJumpEnabled = false
+local jumpCount = 0
+
+-- ScreenGui Oluştur
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ExecutorMenu"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = CoreGui
+
+-- GUI Elemanları
+local mainFrame = Instance.new("Frame")
+local titleBar = Instance.new("Frame")
+local titleLabel = Instance.new("TextLabel")
+local closeButton = Instance.new("TextButton")
+local settingsTab = Instance.new("TextButton")
+local gamesTab = Instance.new("TextButton")
+local settingsContent = Instance.new("Frame")
+local speedLabel = Instance.new("TextLabel")
+local speedSlider = Instance.new("TextButton")
+local speedFill = Instance.new("Frame")
+local speedValue = Instance.new("TextLabel")
+local doubleJumpToggle = Instance.new("TextButton")
+local doubleJumpLabel = Instance.new("TextLabel")
+local gamesContent = Instance.new("Frame")
+local gamesTitle = Instance.new("TextLabel")
+local game1Button = Instance.new("TextButton")
+local game2Button = Instance.new("TextButton")
+local game3Button = Instance.new("TextButton")
+local game4Button = Instance.new("TextButton")
+local toggleButton = Instance.new("TextButton")
+
+-- Ana Frame
+mainFrame.Name = "MainFrame"
+mainFrame.Parent = screenGui
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+mainFrame.BorderSizePixel = 0
+mainFrame.Position = UDim2.new(0.5, -175, 0.5, -150)
+mainFrame.Size = UDim2.new(0, 350, 0, 300)
+mainFrame.Active = true
+mainFrame.Draggable = false
+mainFrame.ZIndex = 10
+
+local corner1 = Instance.new("UICorner")
+corner1.CornerRadius = UDim.new(0, 10)
+corner1.Parent = mainFrame
+
+-- Title Bar
+titleBar.Name = "TitleBar"
+titleBar.Parent = mainFrame
+titleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+titleBar.BorderSizePixel = 0
+titleBar.Size = UDim2.new(1, 0, 0, 40)
+titleBar.ZIndex = 11
+
+local corner2 = Instance.new("UICorner")
+corner2.CornerRadius = UDim.new(0, 10)
+corner2.Parent = titleBar
+
+-- Title Text
+titleLabel.Name = "TitleLabel"
+titleLabel.Parent = titleBar
+titleLabel.BackgroundTransparency = 1
+titleLabel.Size = UDim2.new(1, -40, 1, 0)
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Text = "⚙️ Executor Menü"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 18
+titleLabel.ZIndex = 12
+
+-- Close Button
+closeButton.Name = "CloseButton"
+closeButton.Parent = titleBar
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+closeButton.BorderSizePixel = 0
+closeButton.Position = UDim2.new(1, -35, 0.5, -12.5)
+closeButton.Size = UDim2.new(0, 25, 0, 25)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextSize = 14
+closeButton.ZIndex = 12
+
+local corner3 = Instance.new("UICorner")
+corner3.CornerRadius = UDim.new(0, 6)
+corner3.Parent = closeButton
+
+-- Settings Tab
+settingsTab.Name = "SettingsTab"
+settingsTab.Parent = mainFrame
+settingsTab.BackgroundColor3 = Color3.fromRGB(100, 180, 255)
+settingsTab.BorderSizePixel = 0
+settingsTab.Position = UDim2.new(0, 10, 0, 50)
+settingsTab.Size = UDim2.new(0, 160, 0, 35)
+settingsTab.Font = Enum.Font.GothamBold
+settingsTab.Text = "⚙️ Ayarlar"
+settingsTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+settingsTab.TextSize = 14
+settingsTab.ZIndex = 11
+
+local corner4 = Instance.new("UICorner")
+corner4.CornerRadius = UDim.new(0, 8)
+corner4.Parent = settingsTab
+
+-- Games Tab
+gamesTab.Name = "GamesTab"
+gamesTab.Parent = mainFrame
+gamesTab.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+gamesTab.BorderSizePixel = 0
+gamesTab.Position = UDim2.new(0, 180, 0, 50)
+gamesTab.Size = UDim2.new(0, 160, 0, 35)
+gamesTab.Font = Enum.Font.GothamBold
+gamesTab.Text = "🎮 Oyunlar"
+gamesTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+gamesTab.TextSize = 14
+gamesTab.ZIndex = 11
+
+local corner5 = Instance.new("UICorner")
+corner5.CornerRadius = UDim.new(0, 8)
+corner5.Parent = gamesTab
+
+-- Settings Content
+settingsContent.Name = "SettingsContent"
+settingsContent.Parent = mainFrame
+settingsContent.BackgroundTransparency = 1
+settingsContent.Position = UDim2.new(0, 0, 0, 95)
+settingsContent.Size = UDim2.new(1, 0, 1, -95)
+settingsContent.Visible = true
+settingsContent.ZIndex = 11
+
+-- Speed Label
+speedLabel.Name = "SpeedLabel"
+speedLabel.Parent = settingsContent
+speedLabel.BackgroundTransparency = 1
+speedLabel.Position = UDim2.new(0, 20, 0, 10)
+speedLabel.Size = UDim2.new(1, -40, 0, 25)
+speedLabel.Font = Enum.Font.Gotham
+speedLabel.Text = "🏃 Hız Ayarı"
+speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedLabel.TextSize = 14
+speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+speedLabel.ZIndex = 12
+
+-- Speed Slider
+speedSlider.Name = "SpeedSlider"
+speedSlider.Parent = settingsContent
+speedSlider.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+speedSlider.BorderSizePixel = 0
+speedSlider.Position = UDim2.new(0, 20, 0, 40)
+speedSlider.Size = UDim2.new(1, -40, 0, 20)
+speedSlider.AutoButtonColor = false
+speedSlider.Text = ""
+speedSlider.ZIndex = 12
+
+local corner6 = Instance.new("UICorner")
+corner6.CornerRadius = UDim.new(0, 10)
+corner6.Parent = speedSlider
+
+-- Speed Fill
+speedFill.Name = "SpeedFill"
+speedFill.Parent = speedSlider
+speedFill.BackgroundColor3 = Color3.fromRGB(100, 180, 255)
+speedFill.BorderSizePixel = 0
+speedFill.Size = UDim2.new(0.16, 0, 1, 0)
+speedFill.ZIndex = 13
+
+local corner7 = Instance.new("UICorner")
+corner7.CornerRadius = UDim.new(0, 10)
+corner7.Parent = speedFill
+
+-- Speed Value
+speedValue.Name = "SpeedValue"
+speedValue.Parent = settingsContent
+speedValue.BackgroundTransparency = 1
+speedValue.Position = UDim2.new(0, 20, 0, 65)
+speedValue.Size = UDim2.new(1, -40, 0, 20)
+speedValue.Font = Enum.Font.Gotham
+speedValue.Text = "Hız: 16"
+speedValue.TextColor3 = Color3.fromRGB(200, 200, 200)
+speedValue.TextSize = 12
+speedValue.TextXAlignment = Enum.TextXAlignment.Left
+speedValue.ZIndex = 12
+
+-- Double Jump Label
+doubleJumpLabel.Name = "DoubleJumpLabel"
+doubleJumpLabel.Parent = settingsContent
+doubleJumpLabel.BackgroundTransparency = 1
+doubleJumpLabel.Position = UDim2.new(0, 20, 0, 105)
+doubleJumpLabel.Size = UDim2.new(0.6, 0, 0, 30)
+doubleJumpLabel.Font = Enum.Font.Gotham
+doubleJumpLabel.Text = "🦘 Double Jump"
+doubleJumpLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+doubleJumpLabel.TextSize = 14
+doubleJumpLabel.TextXAlignment = Enum.TextXAlignment.Left
+doubleJumpLabel.ZIndex = 12
+
+-- Double Jump Toggle
+doubleJumpToggle.Name = "DoubleJumpToggle"
+doubleJumpToggle.Parent = settingsContent
+doubleJumpToggle.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+doubleJumpToggle.BorderSizePixel = 0
+doubleJumpToggle.Position = UDim2.new(1, -90, 0, 105)
+doubleJumpToggle.Size = UDim2.new(0, 70, 0, 30)
+doubleJumpToggle.Font = Enum.Font.GothamBold
+doubleJumpToggle.Text = "KAPALI"
+doubleJumpToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+doubleJumpToggle.TextSize = 12
+doubleJumpToggle.ZIndex = 12
+
+local corner8 = Instance.new("UICorner")
+corner8.CornerRadius = UDim.new(0, 8)
+corner8.Parent = doubleJumpToggle
+
+-- Games Content
+gamesContent.Name = "GamesContent"
+gamesContent.Parent = mainFrame
+gamesContent.BackgroundTransparency = 1
+gamesContent.Position = UDim2.new(0, 0, 0, 95)
+gamesContent.Size = UDim2.new(1, 0, 1, -95)
+gamesContent.Visible = false
+gamesContent.ZIndex = 11
+
+-- Games Title
+gamesTitle.Name = "GamesTitle"
+gamesTitle.Parent = gamesContent
+gamesTitle.BackgroundTransparency = 1
+gamesTitle.Position = UDim2.new(0, 20, 0, 10)
+gamesTitle.Size = UDim2.new(1, -40, 0, 25)
+gamesTitle.Font = Enum.Font.GothamBold
+gamesTitle.Text = "🎮 Oyun Scriptleri"
+gamesTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+gamesTitle.TextSize = 14
+gamesTitle.TextXAlignment = Enum.TextXAlignment.Left
+gamesTitle.ZIndex = 12
+
+-- Game Button 1
+game1Button.Name = "Game1Button"
+game1Button.Parent = gamesContent
+game1Button.BackgroundColor3 = Color3.fromRGB(80, 120, 200)
+game1Button.BorderSizePixel = 0
+game1Button.Position = UDim2.new(0, 20, 0, 45)
+game1Button.Size = UDim2.new(0, 145, 0, 40)
+game1Button.Font = Enum.Font.GothamBold
+game1Button.Text = "Oyun 1"
+game1Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+game1Button.TextSize = 14
+game1Button.ZIndex = 12
+
+local corner9 = Instance.new("UICorner")
+corner9.CornerRadius = UDim.new(0, 8)
+corner9.Parent = game1Button
+
+-- Game Button 2
+game2Button.Name = "Game2Button"
+game2Button.Parent = gamesContent
+game2Button.BackgroundColor3 = Color3.fromRGB(80, 120, 200)
+game2Button.BorderSizePixel = 0
+game2Button.Position = UDim2.new(0, 175, 0, 45)
+game2Button.Size = UDim2.new(0, 145, 0, 40)
+game2Button.Font = Enum.Font.GothamBold
+game2Button.Text = "Oyun 2"
+game2Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+game2Button.TextSize = 14
+game2Button.ZIndex = 12
+
+local corner10 = Instance.new("UICorner")
+corner10.CornerRadius = UDim.new(0, 8)
+corner10.Parent = game2Button
+
+-- Game Button 3
+game3Button.Name = "Game3Button"
+game3Button.Parent = gamesContent
+game3Button.BackgroundColor3 = Color3.fromRGB(80, 120, 200)
+game3Button.BorderSizePixel = 0
+game3Button.Position = UDim2.new(0, 20, 0, 95)
+game3Button.Size = UDim2.new(0, 145, 0, 40)
+game3Button.Font = Enum.Font.GothamBold
+game3Button.Text = "Oyun 3"
+game3Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+game3Button.TextSize = 14
+game3Button.ZIndex = 12
+
+local corner11 = Instance.new("UICorner")
+corner11.CornerRadius = UDim.new(0, 8)
+corner11.Parent = game3Button
+
+-- Game Button 4
+game4Button.Name = "Game4Button"
+game4Button.Parent = gamesContent
+game4Button.BackgroundColor3 = Color3.fromRGB(80, 120, 200)
+game4Button.BorderSizePixel = 0
+game4Button.Position = UDim2.new(0, 175, 0, 95)
+game4Button.Size = UDim2.new(0, 145, 0, 40)
+game4Button.Font = Enum.Font.GothamBold
+game4Button.Text = "Oyun 4"
+game4Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+game4Button.TextSize = 14
+game4Button.ZIndex = 12
+
+local corner12 = Instance.new("UICorner")
+corner12.CornerRadius = UDim.new(0, 8)
+corner12.Parent = game4Button
+
+-- Toggle Button
+toggleButton.Name = "ToggleButton"
+toggleButton.Parent = screenGui
+toggleButton.BackgroundColor3 = Color3.fromRGB(100, 180, 255)
+toggleButton.BorderSizePixel = 0
+toggleButton.Position = UDim2.new(0, 10, 0.5, -25)
+toggleButton.Size = UDim2.new(0, 50, 0, 50)
+toggleButton.Font = Enum.Font.GothamBold
+toggleButton.Text = "⚙️"
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.TextSize = 24
+toggleButton.ZIndex = 12
+
+local corner13 = Instance.new("UICorner")
+corner13.CornerRadius = UDim.new(0, 10)
+corner13.Parent = toggleButton
+
+-- FONKSİYONLAR
+
+-- Sürükleme
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+	local delta = input.Position - dragStart
+	mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+titleBar.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+		
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+titleBar.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		update(input)
+	end
+end)
+
+-- Tab değiştirme
+local function switchTab(tabName)
+	if tabName == "settings" then
+		settingsContent.Visible = true
+		gamesContent.Visible = false
+		settingsTab.BackgroundColor3 = Color3.fromRGB(100, 180, 255)
+		gamesTab.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+	elseif tabName == "games" then
+		settingsContent.Visible = false
+		gamesContent.Visible = true
+		settingsTab.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+		gamesTab.BackgroundColor3 = Color3.fromRGB(100, 180, 255)
+	end
+end
+
+settingsTab.MouseButton1Click:Connect(function()
+	switchTab("settings")
+end)
+
+gamesTab.MouseButton1Click:Connect(function()
+	switchTab("games")
+end)
+
+-- Hız ayarlama
+local function updateSpeed(percentage)
+	local speed = math.floor(defaultSpeed + (maxSpeed - defaultSpeed) * percentage)
+	humanoid.WalkSpeed = speed
+	speedFill.Size = UDim2.new(percentage, 0, 1, 0)
+	speedValue.Text = "Hız: " .. speed
+end
+
+speedSlider.MouseButton1Down:Connect(function()
+	local function update()
+		local mousePos = UserInputService:GetMouseLocation().X
+		local sliderPos = speedSlider.AbsolutePosition.X
+		local sliderSize = speedSlider.AbsoluteSize.X
+		local percentage = math.clamp((mousePos - sliderPos) / sliderSize, 0, 1)
+		updateSpeed(percentage)
+	end
+	
+	update()
+	
+	local connection
+	connection = UserInputService.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement then
+			update()
+		end
+	end)
+	
+	local connection2
+	connection2 = UserInputService.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			connection:Disconnect()
+			connection2:Disconnect()
+		end
+	end)
+end)
+
+-- Double Jump
+doubleJumpToggle.MouseButton1Click:Connect(function()
+	doubleJumpEnabled = not doubleJumpEnabled
+	if doubleJumpEnabled then
+		doubleJumpToggle.BackgroundColor3 = Color3.fromRGB(60, 255, 60)
+		doubleJumpToggle.Text = "AÇIK"
+	else
+		doubleJumpToggle.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+		doubleJumpToggle.Text = "KAPALI"
+	end
+end)
+
+humanoid.StateChanged:Connect(function(old, new)
+	if new == Enum.HumanoidStateType.Landed then
+		jumpCount = 0
+	end
+end)
+
+UserInputService.JumpRequest:Connect(function()
+	if doubleJumpEnabled then
+		if jumpCount < 2 then
+			humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+			jumpCount = jumpCount + 1
+		end
+	end
+end)
+
+-- OYUN BUTONLARI - KENDİ SCRİPTLERİNİ BURAYA EKLE
+
+game1Button.MouseButton1Click:Connect(function()
+	-- BURAYA KENDİ SCRİPTİNİ EKLE
+	print("Oyun 1 çalıştırıldı!")
+end)
+
+game2Button.MouseButton1Click:Connect(function()
+	-- BURAYA KENDİ SCRİPTİNİ EKLE
+	print("Oyun 2 çalıştırıldı!")
+end)
+
+game3Button.MouseButton1Click:Connect(function()
+	-- BURAYA KENDİ SCRİPTİNİ EKLE
+	print("Oyun 3 çalıştırıldı!")
+end)
+
+game4Button.MouseButton1Click:Connect(function()
+	-- BURAYA KENDİ SCRİPTİNİ EKLE
+	print("Oyun 4 çalıştırıldı!")
+end)
+
+-- Close ve Toggle
+closeButton.MouseButton1Click:Connect(function()
+	mainFrame.Visible = false
+end)
+
+toggleButton.MouseButton1Click:Connect(function()
+	mainFrame.Visible = not mainFrame.Visible
+end)
+
+-- Karakter yeniden spawn
+player.CharacterAdded:Connect(function(char)
+	character = char
+	humanoid = character:WaitForChild("Humanoid")
+	jumpCount = 0
+	humanoid.WalkSpeed = defaultSpeed
+end)
+
+print("Executor menüsü başarıyla yüklendi! Sol tarafta mavi butona bas.")

@@ -10,7 +10,7 @@ local humanoid = character:WaitForChild("Humanoid")
 
 -- Ayarlar
 local defaultSpeed = 16
-local maxSpeed = 100
+local maxSpeed = 500
 local doubleJumpEnabled = false
 local jumpCount = 0
 
@@ -149,7 +149,7 @@ speedLabel.Size = UDim2.new(1, -40, 0, 25)
 speedLabel.Font = Enum.Font.Gotham
 speedLabel.Text = "🏃 Hız Ayarı"
 speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedLabel.TextSize = 14
+speedLabel.TextSize = 5000
 speedLabel.TextXAlignment = Enum.TextXAlignment.Left
 speedLabel.ZIndex = 12
 
@@ -189,7 +189,7 @@ speedValue.Size = UDim2.new(1, -40, 0, 20)
 speedValue.Font = Enum.Font.Gotham
 speedValue.Text = "Hız: 16"
 speedValue.TextColor3 = Color3.fromRGB(200, 200, 200)
-speedValue.TextSize = 12
+speedValue.TextSize = 5000
 speedValue.TextXAlignment = Enum.TextXAlignment.Left
 speedValue.ZIndex = 12
 
@@ -202,7 +202,7 @@ doubleJumpLabel.Size = UDim2.new(0.6, 0, 0, 30)
 doubleJumpLabel.Font = Enum.Font.Gotham
 doubleJumpLabel.Text = "🦘 Double Jump"
 doubleJumpLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-doubleJumpLabel.TextSize = 14
+doubleJumpLabel.TextSize = 5000
 doubleJumpLabel.TextXAlignment = Enum.TextXAlignment.Left
 doubleJumpLabel.ZIndex = 12
 
@@ -253,7 +253,7 @@ game1Button.BorderSizePixel = 0
 game1Button.Position = UDim2.new(0, 20, 0, 45)
 game1Button.Size = UDim2.new(0, 145, 0, 40)
 game1Button.Font = Enum.Font.GothamBold
-game1Button.Text = "Oyun 1"
+game1Button.Text = "YAKINDA"
 game1Button.TextColor3 = Color3.fromRGB(255, 255, 255)
 game1Button.TextSize = 14
 game1Button.ZIndex = 12
@@ -270,7 +270,7 @@ game2Button.BorderSizePixel = 0
 game2Button.Position = UDim2.new(0, 175, 0, 45)
 game2Button.Size = UDim2.new(0, 145, 0, 40)
 game2Button.Font = Enum.Font.GothamBold
-game2Button.Text = "Oyun 2"
+game2Button.Text = "YAKINDA"
 game2Button.TextColor3 = Color3.fromRGB(255, 255, 255)
 game2Button.TextSize = 14
 game2Button.ZIndex = 12
@@ -287,7 +287,7 @@ game3Button.BorderSizePixel = 0
 game3Button.Position = UDim2.new(0, 20, 0, 95)
 game3Button.Size = UDim2.new(0, 145, 0, 40)
 game3Button.Font = Enum.Font.GothamBold
-game3Button.Text = "Oyun 3"
+game3Button.Text = "YAKINDA"
 game3Button.TextColor3 = Color3.fromRGB(255, 255, 255)
 game3Button.TextSize = 14
 game3Button.ZIndex = 12
@@ -304,7 +304,7 @@ game4Button.BorderSizePixel = 0
 game4Button.Position = UDim2.new(0, 175, 0, 95)
 game4Button.Size = UDim2.new(0, 145, 0, 40)
 game4Button.Font = Enum.Font.GothamBold
-game4Button.Text = "Oyun 4"
+game4Button.Text = "YAKINDA"
 game4Button.TextColor3 = Color3.fromRGB(255, 255, 255)
 game4Button.TextSize = 14
 game4Button.ZIndex = 12
@@ -441,7 +441,7 @@ end)
 
 humanoid.StateChanged:Connect(function(old, new)
 	if new == Enum.HumanoidStateType.Landed then
-		jumpCount = 0
+		jumpCount = 6000
 	end
 end)
 
